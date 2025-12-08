@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Types and Time</title>
+
+		<link rel="stylesheet" href="revealjs/dist/reset.css">
+		<link rel="stylesheet" href="revealjs/dist/reveal.css">
+		<link rel="stylesheet" href="revealjs/dist/theme/white.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="revealjs/plugin/highlight/monokai.css">
+
+		<style>
+			.reveal .slide-number {
+				font-size: 0.5em;
+				color: #000000;
+				background-color: rgba(0, 0, 0, 0);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+<section>
+	<img width="50%" src="images/cover-image.jpg">
+	<h3>Types and Time</h3>
+	<h5>Languages, Tools, and Methods<br>for Reliable Systems Engineering</h5>
+	<p>Nikolaus Huber</p>
+</section>
+
+<section>
+	<img width="80%" src="images/v_diagram_papers.jpg">
+</section>
+
+<section>
+	<span style="font-size: 60%">
+	$$\small
+	\begin{align*}
+	\begin{array}{rcll}
+	e : \text{Expression} & ::= & x & \text{Variable} \\
+	{} & | & c & \text{Constant} \\
+	{} & | & e\bm{,}\, \ldots\bm{,}\, e & \text{Tuple} \\
+	{} & | & \textbf{pre}\, e & \text{Pre} \\
+	{} & | & e\, \bm{\rightarrow}\, e & \text{Initialized-by} \\
+	{} & | & e\, \textbf{fby}\, e & \text{Followed-by} \\
+	{} & | & e\, e & \text{Application} \\
+	{} & | & \textbf{if}\, e\, \textbf{then}\, e\, \textbf{else}\, e & \text{Conditional} \\
+	{} & | & \textbf{None} & \text{None} \\
+	{} & | & \textbf{Some}\, e & \text{Some} \\
+	{} & | & \textbf{either}\, e\, \textbf{or}\, e & \text{Option match} \\
+	{} & | & \bm{\lambda}_{p_{in}}^{p_{out}} \bm{.} [p_i = e_i]^n & \text{Abstraction} \\
+	p : \text{Pattern} & ::= & x & \text{Variable pattern} \\
+	{} & | & p\bm{,}\, \ldots\bm{,}\, p & \text{Tuple pattern}
+	\end{array}
+	\end{align*}$$
+	</span>
+</section>
+
+<section>
+	<h3>Environments</h3>
+	<span style="font-size: 80%">
+	$$\Gamma \quad \subseteq \quad \textbf{Names} \times \textbf{Values}$$
+	</span>
+
+	<h5 class="fragment fade-up" style="text-align: left;">Projection</h5>
+	<span class="fragment fade-up" style="font-size: 70%">
+	\[\begin{align*}(x \mapsto 1, y \mapsto 2) \Downarrow_x\; &=\; 1 \\
+	(x \mapsto 1, y \mapsto 2) \Downarrow_{(x, y)}\; &=\; (1, 2)\end{align*}\]
+	</span>
+	<h5 class="fragment fade-up" style="text-align: left;">Update</h5>
+	<span class="fragment fade-up" style="font-size: 70%">
+	\[\begin{align*}(x \mapsto 1, y \mapsto 2) \Uparrow_z^3\; &=\; (x \mapsto 1, y \mapsto 2, z \mapsto 3) \\
+	(x \mapsto 1, y \mapsto 2) \Uparrow_{(x, y)}^{(3, 4)}\; &=\; (x \mapsto 3, y \mapsto 4)\end{align*}\]
+	</span>
+</section>
+
+<section>
+	<h3>Step semantics</h3>
+	<ul>
+		<li class="fragment fade-up">How to model state?</li>
+		<li class="fragment fade-up">Big-step + rewrite semantics</li>
+	</ul>
+	<span class="fragment fade-up">\[\Gamma \vdash e \Rightarrow v, e'\]</span>
+</section>
+
+<section>
+	<span style="font-size: 35%">
+	\[
+	\begin{gather*}
+	\begin{aligned}
+	\frac{}{\Gamma \vdash x \Rightarrow \Gamma \Downarrow_x, x}\; \texttt{\small (Var)}
+	& \; &
+	\frac{}{\Gamma \vdash c \Rightarrow c, c}\; \texttt{\small (Const)}
+	& \; &
+	\frac{\Gamma \vdash e \Rightarrow v, e'}{\Gamma \vdash \textbf{pre}\, e \Rightarrow \bot, (v \rightarrow \textbf{pre}\, e')}\; \texttt{\small (Pre)}
+	\end{aligned} \\[4mm]
+	\begin{aligned}
+	\frac{\Gamma \vdash e_1 \Rightarrow v_1, \text{\textunderscore}}{\Gamma \vdash e_1\, \textbf{fby}\, e_2 \Rightarrow v_1, e_2}\; \texttt{\small (Fby)}
+	& \; &
+	\frac{\Gamma \vdash e_1 \Rightarrow v_1, \text{\textunderscore} \qquad \Gamma \vdash e_2 \Rightarrow \text{\textunderscore}, e_2'}{\Gamma \vdash (e_1 \bm{\rightarrow} e_2) \Rightarrow v_1, e_2'}\; \texttt{\small (Init)}
+	\end{aligned} \\[4mm]
+	\frac{\Gamma \vdash e_1 \Rightarrow v_1, e_1' \qquad \ldots \qquad \Gamma \vdash e_n \Rightarrow v_n, e_n'}{\Gamma \vdash (e_1, \ldots, e_n) \Rightarrow (v_1, \ldots, v_n), (e_1', \ldots, e_n')}\; \texttt{\small (Tuple)} \\[4mm]
+	\frac{\Gamma \vdash e_1 \Rightarrow \textbf{True}, e_1' \qquad \Gamma \vdash e_2 \Rightarrow v, e_2'}{\Gamma \vdash \textbf{if}\, e_1\, \textbf{then}\, e_2\, \textbf{else}\, e_3 \Rightarrow v, \textbf{if}\, e_1'\, \textbf{then}\, e_2'\, \textbf{else}\, e_3}\; \texttt{\small (IfTrue)} \\[4mm]
+	\frac{\Gamma \vdash e_1 \Rightarrow \textbf{False}, e_1' \qquad \Gamma \vdash e_3 \Rightarrow v, e_3'}{\Gamma \vdash \textbf{if}\, e_1\, \textbf{then}\, e_2\, \textbf{else}\, e_3 \Rightarrow v, \textbf{if}\, e_1'\, \textbf{then}\, e_2\, \textbf{else}\, e_3'}\; \texttt{\small (IfFalse)} \\[4mm]
+	\begin{aligned}
+	\frac{}{\Gamma \vdash \textbf{None} \Rightarrow \textbf{None}, \textbf{None}}\; \texttt{\small (None)}
+	& \; &
+	\frac{\Gamma \vdash e \Rightarrow v, e'}{\Gamma \vdash \textbf{Some}\, e \Rightarrow \textbf{Some}\, v, \textbf{Some}\, e'}\; \texttt{\small (Some)}
+	\end{aligned} \\[4mm]
+	\begin{aligned}
+	\frac{\Gamma \vdash e_1 \Rightarrow \textbf{Some}\, v, e_1'}{\Gamma \vdash (\textbf{either}\, e_1\, \textbf{or}\, e_2) \Rightarrow v, (\textbf{either}\, e_1'\, \textbf{or}\, e_2)}\; \texttt{\small (EthrSome)}
+	& \; &
+	\frac{\Gamma \vdash e_1 \Rightarrow \textbf{None}, e_1' \qquad \Gamma \vdash e_2 \Rightarrow v, e_2'}{\Gamma \vdash (\textbf{either}\, e_1\, \textbf{or}\, e_2) \Rightarrow v, (\textbf{either}\, e_1'\, \textbf{or}\, e_2')}\; \texttt{\small (EthrNone)}
+	\end{aligned} \\[4mm]
+	\frac{\Gamma \vdash e_1 \Rightarrow \bm{\lambda}_{p_{in}}^{p_{out}} \bm{.} [p_i = e_i]^n, \text{\textunderscore} \qquad \Gamma \vdash e_2 \Rightarrow v_2, e_2' \qquad \Gamma \Uparrow_{p_{in}}^{v_2} \vdash [p_i = e_i]^n \hookrightarrow [p_i = e_i']^n, \Gamma'}{\Gamma \vdash e_1\; e_2 \Rightarrow \Gamma' \Downarrow_{p_{out}}, (\bm{\lambda}_{p_{in}}^{p_{out}} \bm{.} [p_i = e_i']^n)\; e_2'}\; \texttt{\small (App)} \\[4mm]
+	\frac{\Gamma' \vdash e_1 \Rightarrow v_1, e_1' \qquad \ldots \qquad \Gamma' \vdash e_n \Rightarrow v_n, e_n'}{\Gamma \vdash [p_i = e_i]^n \hookrightarrow [p_i = e_i']^n, \Gamma' = \Gamma \Uparrow_{p_1}^{v_1} \cdots \Uparrow_{p_n}^{v_n}}\; \texttt{\small (Eqs)}
+	\end{gather*}
+	\]
+	</span>
+</section>
+
+<section>
+	<span style="font-size: 70%">
+	\[
+	\begin{gather*}
+	\frac{}{\Gamma \vdash x \Rightarrow \Gamma \Downarrow_x, x}\; \texttt{\small (Var)} \\[0.6cm]
+	\frac{}{\Gamma \vdash c \Rightarrow c, c}\; \texttt{\small (Const)}
+	\end{gather*}
+	\]
+	</span>
+</section>
+
+<section>
+	<span style="font-size: 70%">
+	\[
+	\begin{gather*}
+	\frac{\Gamma \vdash e \Rightarrow v, e'}{\Gamma \vdash \textbf{pre}\, e \Rightarrow \bot, (v \rightarrow \textbf{pre}\, e')}\; \texttt{\small (Pre)} \\[0.6cm]
+	\frac{\Gamma \vdash e_1 \Rightarrow v_1, \text{\textunderscore}}{\Gamma \vdash e_1\, \textbf{fby}\, e_2 \Rightarrow v_1, e_2}\; \texttt{\small (Fby)} \\[0.6cm]
+	\frac{\Gamma \vdash e_1 \Rightarrow v_1, \text{\textunderscore} \qquad \Gamma \vdash e_2 \Rightarrow \text{\textunderscore}, e_2'}{\Gamma \vdash (e_1 \bm{\rightarrow} e_2) \Rightarrow v_1, e_2'}\; \texttt{\small (Init)}
+	\end{gather*}
+	\]
+	</span>
+</section>
+
+<section>
+	<span style="font-size: 50%">
+	\[
+	\begin{gather*}
+	\frac{\Gamma \vdash e_1 \Rightarrow \bm{\lambda}_{p_{in}}^{p_{out}} \bm{.} [p_i = e_i]^n, \text{\textunderscore} \qquad \Gamma \vdash e_2 \Rightarrow v_2, e_2' \qquad \Gamma \Uparrow_{p_{in}}^{v_2} \vdash [p_i = e_i]^n \hookrightarrow [p_i = e_i']^n, \Gamma'}{\Gamma \vdash e_1\; e_2 \Rightarrow \Gamma' \Downarrow_{p_{out}}, (\bm{\lambda}_{p_{in}}^{p_{out}} \bm{.} [p_i = e_i']^n)\; e_2'}\; \texttt{\small (App)} \\[0.8cm]
+	\frac{\Gamma' \vdash e_1 \Rightarrow v_1, e_1' \qquad \ldots \qquad \Gamma' \vdash e_n \Rightarrow v_n, e_n'}{\Gamma \vdash [p_i = e_i]^n \hookrightarrow [p_i = e_i']^n, \Gamma' = \Gamma \Uparrow_{p_1}^{v_1} \cdots \Uparrow_{p_n}^{v_n}}\; \texttt{\small (Eqs)}
+	\end{gather*}
+	\]
+	</span>
+</section>
+
+<section>
+	<img class="r-stretch" src="images/fifo-rewrite.png" />
+</section>
+
+
+				<section>Slide 2</section>
+			</div>
+		</div>
+
+		<script src="revealjs/dist/reveal.js"></script>
+		<script src="revealjs/plugin/notes/notes.js"></script>
+		<script src="revealjs/plugin/markdown/markdown.js"></script>
+		<script src="revealjs/plugin/highlight/highlight.js"></script>
+		<script src="revealjs/plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+				slideNumber: "c",
+				transition: "fade",
+				controls: false,
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
+			});
+		</script>
+	</body>
+</html>
