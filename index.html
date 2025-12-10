@@ -11,7 +11,7 @@
 		<link rel="stylesheet" href="revealjs/dist/theme/white.css">
 
 		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="revealjs/plugin/highlight/monokai.css">
+		<link rel="stylesheet" href="revealjs/plugin/highlight/stackoverflow-light.css">
 
 		<link rel="stylesheet" href="style.css">
 	</head>
@@ -67,6 +67,87 @@
 
 <section>
 	<img width="80%" src="images/v_diagram_papers.jpg">
+</section>
+
+<section>
+	<div class="contr-box">
+		<div class="contr-paper">
+			<div class="contr-title">Mimosa: A Language for Asynchronous Implementation of Embedded Systems Software</div>
+			<div class="contr-authors"><b>Huber N.</b>, Graf S., Rümmer P., Yi W.</div>
+		</div>
+		<div class="contr-badges">
+			<img class="contr-badge" src="images/coordination_functional.png">
+			<img class="contr-badge" src="images/coordination_available.png">
+		</div>
+	</div>
+
+	<div class="contr-box">
+		<div class="contr-paper">
+			<div class="contr-title">Compiling the Mimosa Programming Language to RTOS Tasks</div>
+			<div class="contr-authors"><b>Huber N.</b>, Graf S., Rümmer P., Yi W.</div>
+		</div>
+	</div>
+</section>
+
+<section>
+	<h3>Motivation</h3>
+	<ul>
+		<li class="fragment fade-up">Synchronous paradigm</li>
+		<ul>
+			<li class="fragment fade-up">Lustre/SCADE, Esterel, Signal, ...</li>
+			<li class="fragment fade-up">safety-critical embedded control</li>
+		</ul>
+		<li class="fragment fade-up">Modern execution platforms</li>
+		<ul>
+			<li class="fragment fade-up">Multi- & many-core processors</li>
+			<li class="fragment fade-up">distributed systems</li>
+		</ul>
+		<li class="fragment fade-up">(Safe) updates?</li>
+	</ul>
+</section>
+
+<section>
+	<h3>Mimos</h3>
+	<img class="r-stretch" src="images/mimos_model.jpg">
+</section>
+
+<section>
+	<h3>Implementation</h3>
+	<img class="r-stretch" src="images/mimos_layers.jpg">
+</section>
+
+<section>
+	<h3>Our contribution</h3>
+
+	<ul>
+		<li class="fragment fade-up">MIMOS Application language</li>
+		<li class="fragment fade-up">Focus on formal semantics</li>
+		<li class="fragment fade-up">Naturally divides into</li>
+		<ul>
+			<li class="fragment fade-up">Semantics for computation</li>
+			<li class="fragment fade-up">Semantics for coordination</li>
+		</ul>
+		<li class="fragment fade-up">Prototype simulator</li>
+		<li class="fragment fade-up">Compilation scheme</li>
+	</ul>
+</section>
+
+<section data-auto-animate>
+	<img width="80%" src="images/fib_example.png" />
+	<pre class="text"><code data-trim data-noescape data-line-numbers="|1|2,3|5-8|10-12|">
+		step print_int (_ : int) --> ()
+		step add (x, y) --> z { z = x + y }
+		step split x --> (o1, o2, o3) { o1, o2, o3 = x, x, x }
+
+		channel a : int = { 1 }
+		channel b : int = { 0 }
+		channel c : int
+		channel d : int
+
+		node add implements add (a, c) --> (b) every 10ms
+		node split implements split (b) --> (a, d, c) every 10ms
+		node print implements print_int (d) --> () every 10ms
+	</code></pre>
 </section>
 
 <section>
@@ -191,11 +272,554 @@
 </section>
 
 <section>
-	<img class="r-stretch" src="images/fifo-rewrite.png" />
+	<img class="r-stretch" src="images/rewriting_fifo.png" />
+</section>
+
+<section>
+	<h3>Simulation</h3>
+	<ul>
+		<li class="fragment fade-up">Deep embedding into OCaml</li>
+		<li class="fragment fade-up">Step evaluation &rarr; direct translation</li>
+		<li class="fragment fade-up">Node execution &rarr; discrete-event simulation</li>
+		<li class="fragment fade-up">Step prototypes &rarr; OCaml functor</li>
+	</ul>
+</section>
+
+<section>
+	<h3 style="text-transform: none;">NormIR</h3>
+	<span style="font-size:50%">
+	\[
+	\begin{align*}
+	\begin{array}{rcll}
+	b : \text{Base} & ::= & x & \text{Variable} \\
+	{} & | & c & \text{Constant} \\
+	{} & | & \textbf{None} & \text{None} \\
+	{} & | & \textbf{Some}\, x & \text{Some} \\
+	e : \text{Expression} & ::= & b & \text{Base expression} \\
+	{} & | & x\bm{,}\, \ldots\bm{,}\, x & \text{Tuple} \\
+	{} & | & \textbf{pre}\, x & \text{Pre} \\
+	{} & | & bl\, \textbf{fby}\, bl & \text{Followed-by} \\
+	{} & | & x\, x & \text{Application} \\
+	{} & | & \textbf{if}\, x\, \textbf{then}\, bl\, \textbf{else}\, bl & \text{Conditional} \\
+	{} & | & \textbf{either}\, x\, \textbf{or}\, bl & \text{Option match} \\
+	bl : \text{Block} & ::= & [\, p_i\, =\, e_i\, ]^n,\, b & \text{Block}
+	\end{array}
+	\end{align*}
+	\]
+	</span>
+</section>
+
+<section>
+	<h3>Normalisation</h3>
+	<div style="margin-top: 3rem"></div>
+	<span style="font-size: 30%">
+	\[
+	\begin{gather*}%
+    \begin{aligned}
+    % Variables
+    \frac%
+    { }%
+    {x\, \Rrightarrow\, [\;],\, x}% 
+    \; \texttt{\small (Var)}%
+    & \; &
+    % Constants
+    & \frac%
+    { }%
+    {c\, \Rrightarrow\, [\;],\, c}%
+    \; \texttt{(Const)}%
+    & \; &
+    % Some
+    \frac%
+    { e\, \Rrightarrow\, s,\, e' }%
+    { \textbf{Some}\, e\, \Rrightarrow\, (s\, ::\, [\, \langle r \rangle\, =\, \textbf{Some}\, e'\,]), \, \langle r \rangle}%
+    \; \texttt{(Some)} %
+    \end{aligned}\\[4mm]%
+    \begin{aligned}
+    % None
+    \frac%
+    { }%
+    { \textbf{None}\, \Rrightarrow\, [\;],\, \textbf{None} }%
+    \; \texttt{(None)}
+    & \; &
+    % Init
+    \frac%
+    {e_1\, \Rrightarrow b \qquad e_2\, \Rrightarrow\, s_2,\, e_2'}%
+    {{e_1\, \rightarrow\, e_2}\, \Rrightarrow\, {(s_2\, :: [\, \langle y \rangle\, =\, e_2';\, \langle r \rangle\, =\, b\, \textbf{fby}\, ([\;],\, \langle y \rangle)\,])},\, {\langle r\rangle}}%
+    \; \texttt{(Init)}
+    \end{aligned}\\[4mm]%
+    \begin{aligned}
+    % Pre
+    \frac%
+    {{e}\, \Rrightarrow {s},\,{e'}}%
+    {\textbf{pre}\,e\, \Rrightarrow\, (s \, ::\, [\, \langle x \rangle \,=\, e';\, \langle r \rangle \,=\, \textbf{pre}\, \langle x \rangle \,]),\, \langle r \rangle}%
+    \; \texttt{(Pre)}%
+    & \quad &
+    % Fby
+    \frac%
+    {e_1\, \Rrightarrow\, b_1 \qquad e_2\, \Rrightarrow\, b_2}%
+    {{e_1\, \textbf{fby}\, e_2}\, \Rrightarrow {[\,\langle r \rangle\, =\, b_1\, \textbf{fby}\, b_2\,]},\,{\langle r \rangle}}%
+    \; \texttt{(Fby)}%
+    \end{aligned} \\[4mm]%
+    % Tuples
+    \frac%
+    {{e_1}\, \Rrightarrow {s_1},\, {e_1'} \qquad \ldots \qquad {e_n}\, \Rrightarrow {s_n},\, {e_n'}}%
+    {e_1,\, \ldots,\, e_n\, \Rrightarrow\, (s_1\, :: \ldots\, ::\, s_n\, ::
+    [\,\langle t_1 \rangle\, =\, e_1';\, \ldots;\, \langle t_n \rangle\, =\, e_n';\, \langle r \rangle\, =\, \langle t_1 \rangle,\, \ldots,\, \langle t_n \rangle\,]),\, \langle r \rangle}
+    \; \texttt{(Tuple)} \\[4mm]%
+    % If-then-else
+    \frac%
+    {{e_1}\, \Rrightarrow {s},\, {e_1'} \qquad e_2\, \Rrightarrow\, b_2 \qquad e_3\, \Rrightarrow\, b_3}%
+    {\textbf{if}\, e_1\, \textbf{then}\, e_2 \, \textbf{else}\, e_3\, \Rrightarrow (s\, ::\, [\, \langle x \rangle\, =\, e_1';\, \langle r\rangle\, =\, \textbf{if}\, \langle x \rangle\, \textbf{then}\, b_2\, \textbf{else}\, b_3\,]),\,\langle r \rangle
+    }%
+    \; \texttt{(If)} \\[4mm]%
+    \begin{aligned}
+    % Either-or
+    \frac%
+    {e_1\, \Rrightarrow\, s,\, e_1' \qquad e_2\, \Rrightarrow\, b}%
+    {\textbf{either}\, e_1\, \textbf{or}\, e_2\, \Rrightarrow (s\, ::\, [ \, \langle x \rangle\, =\, e_1';\, \langle r \rangle\, =\, \textbf{either}\, \langle x \rangle\, \textbf{or}\, b\, ]),\, \langle r \rangle}%
+    \; \texttt{(Either)} %
+    & \; &
+    % Application
+    \frac%
+    {e_1\, =\, f \qquad e_2\, \Rrightarrow\, s,\, e_2'}%
+    {e_1 \; e_2 \, \Rrightarrow\, (s\, ::\, [\, \langle x \rangle\, =\, e_2';\, \langle r \rangle\, =\, f\; \langle x \rangle\,]),\, \langle r \rangle}%
+    \; \texttt{(App)}
+    \end{aligned}%
+	\end{gather*}
+	\]
+	</span>
+</section>
+
+<section>
+	<h3>Step normalisation</h3>
+	<div style="margin-top: 3rem"></div>
+	<span style="font-size: 40%">
+		\[
+		\begin{gather*}
+		\textbf{step}\, name\, \bm{(}\, i_1\bm{,}\, \ldots\bm{,}\, i_l\, \bm{)}\, \bm{\longrightarrow}\, \bm{(}\, o_1\bm{,}\, \ldots\bm{,}\, o_k\, \bm{)}\, [\, p_i\, =\, e_i\, ]^n\\
+		\Downarrow \\
+		e_1\, \Rrightarrow\, s_1,\, e_1' \qquad \ldots \qquad e_n\, \Rrightarrow\, s_n,\, e_n' \\
+		\Downarrow \\
+		\textbf{step}\, name\, \langle in \rangle\, \bm{\longrightarrow}\, \langle out \rangle\, (
+		\left (
+		\begin{array}{c}
+			[\, i_1\bm{,}\, \ldots\bm{,}\, i_l\, =\, \langle in \rangle\,]\\
+			\vdots \\
+			::\, s_i\, ::\, [\, p_i\, =\, e_i'\, ]\, :: \\
+			\vdots \\
+			\left [\, \langle out \rangle\, =\, o_1\bm{,}\, \ldots\bm{,}\, o_k\, \right ]
+		\end{array}
+		\right )
+		, \langle out \rangle )
+		\end{gather*}
+		\]
+	</span>
+</section>
+
+<section>
+	<h3>OOIR</h3>
+	<span style="font-size: 50%">
+		\[
+		\begin{align*}
+		\begin{array}{rcll}
+		e : \text{Expression} & ::= & x & \text{Variable} \\
+		{} & | & \textbf{!}\, x & \text{State variable} \\
+		{} & | & c & \text{Constant} \\
+		{} & | & \textbf{None} & \text{None} \\
+		{} & | & \textbf{Some}\, x & \text{Some} \\
+		i : \text{Instruction} & ::= & x\, =\, e & \text{Assignment} \\
+		{} & | & x\, \bm{\leftarrow}\, e & \text{State assignment} \\
+		{} & | & x\, =\, x\bm{,}\, \ldots\bm{,}\, x & \text{Tuple construction} \\
+		{} & | & x\bm{,}\, \ldots\bm{,}\, x\, =\, x & \text{Tuple destruction} \\
+		{} & | & x.\textbf{reset} (\, x\, ) & \text{State reset} \\
+		{} & | & \textbf{return}\, e & \text{Return} \\
+		{} & | & \textbf{if}\, x\, \textbf{then}\, [\, i\,]\,  \textbf{else}\, [\, i\, ] & \text{Conditional} \\
+		{} & | & x\, =\, x.\textbf{step}\, \bm{(}\, x,\, x\, \bm{)} & \text{Application} \\
+		{} & | & \textbf{case}\, x\, \bm{\ \{} \, \textbf{Some}\, x:\, [\, i \,]; \textbf{None}: \, [\, i \,]\, \textbf{\}} & \text{Option match} \\
+		d : \text{Machine} & ::= & (\, m,\, j,\, r,\, s\, ) & {} \\
+		m,\, j & ::= & [\, x \,] & {} \\
+		r,\, s & ::= & [\, i\, ]
+		\end{array}
+		\end{align*}
+		\]
+	</span>
+</section>
+
+<section>
+	<h3 style="text-transform: none;">NormIR &rarr; OOIR</h3>
+	<span style="font-size: 30%">
+		\[
+		\begin{gather*}
+		\begin{aligned}
+		\frac{ }{ m \triangleright c \rightsquigarrow c }\; \texttt{(Const)} & \quad &
+		\frac{ v \notin m }{ m \triangleright v \rightsquigarrow v}\; \texttt{(Var)} & \quad &
+		\frac{ v \in m}{ m \triangleright v \rightsquigarrow \textbf{!}\, v}\; \texttt{(StateVar)} & \quad &
+		\frac{ }{m \triangleright \textbf{None} \rightsquigarrow \textbf{None}}\; \texttt{(None)} \end{aligned}\\[5mm]
+		\begin{aligned}
+		\frac{ }{ m \triangleright \textbf{Some}\, v \rightsquigarrow \textbf{Some}\,v} \; \texttt{(Some)} & \quad &
+		\frac%
+		{ m \triangleright e \rightsquigarrow e' }%
+		{ (m, j, r, s) \triangleright v = e \Rightarrow (m, j, r, (s ::\, [\, v = e'\,]))}%
+		\; \texttt{(Base)}
+		\end{aligned} \\[5mm]
+		\frac{(m, j, r, [\;]) \triangleright s_t \Rightarrow (m', j', r', s_t') \qquad m' \triangleright e_t \rightsquigarrow e_t' \qquad (m', j', r', [\;]) \triangleright s_e \Rightarrow (m'', j'', r'', s_e') \qquad m'' \triangleright e_e \rightsquigarrow e_e'}%
+		{ (m,j,r,s) \triangleright x = \textbf{if}\, c\, \textbf{then}\, (s_t, e_t)\, \textbf{else}\, (s_e, e_e) \Rightarrow (m'', j'', r'', (s\, :: \, [\, \textbf{if}\, c\, \textbf{then}\, (s_t'\, ::\, [\, x\, =\, e_t'\,])\, \textbf{else}\, (s_e'\, ::\, [\, x\, =\, e_e'\,])\,])) }%
+		\; \texttt{(If)} \\[5mm]
+		\frac%
+		{}%
+		{(m, j, r, s) \triangleright v = \textbf{pre}\, x \Rightarrow ((m\, ::\, [\, \langle tmp \rangle\,]), j, (r\, ::\, [\,\langle tmp \rangle \bm{\leftarrow} nil\,]), (s \, ::\, [\, v = \textbf{!}\, \langle tmp \rangle;\, \langle tmp \rangle \bm{\leftarrow} x \,]))}
+		\; \texttt{(Pre)} \\[5mm]
+		\frac%
+		{(m, j, r, [\;]) \triangleright s_1 \Rightarrow (m', j', r', s_1') \qquad m' \triangleright e_1 \rightsquigarrow e_1' \qquad (m', j', r', [\;]) \triangleright s_2 \Rightarrow (m'', j'', r'', s_2') \qquad m'' \triangleright e_2 \rightsquigarrow e_2'}%
+		{{\begin{array}{c}(m, j, r, s) \triangleright v = (s_1, e_1) \, \textbf{fby}\, (s_2, e_2) \Rightarrow \\ ((m''\, ::\, [\,\langle \mathit{fst} \rangle\,]), j'', (r''\, :: \, [\, \langle \mathit{fst} \rangle \bm{\leftarrow} true \,]), (s\, ::\, [\, \langle t \rangle = \textbf{!}\, \langle \mathit{fst} \rangle;\, \textbf{if}\, \langle t \rangle\, \textbf{then}\, (s'\, ::\, [\, v = e_1'\,])\, \textbf{else}\, (s''\, ::\, [\, v = e_2'\,]);\, \langle \mathit{fst} \rangle \bm{\leftarrow} false\,]))\end{array}}}
+		\; \texttt{(Fby)} \\[10mm]
+		\frac%
+		{(m,j,r,[\;]) \triangleright s \Rightarrow (m', j', r', s') \qquad m' \triangleright e \rightsquigarrow e'}%
+		{(m,j,r,s) \triangleright v = \textbf{either}\, x\, \textbf{or}\, (s, e) \Rightarrow (m', j', r', (s\, ::\, [\, \textbf{case}\, x\, \bm{\{} \textbf{Some}\, y: [\, v = y\, ]; \textbf{None}: (s'\, ::\, [\, v = e'\,] \bm{\}}]))}%
+		\; \texttt{(Either)} \\[5mm]
+		\frac%
+		{ }%
+		{ (m,j,r,s) \triangleright v = \mathrm{f}\, x \Rightarrow (m, (j\, ::\, [\, \langle o \rangle\,]), (r\, ::\, [\, \mathrm{f}.\textbf{reset} (\, \langle o \rangle\, )\,]), (s\, ::\, [ \, x = \mathrm{f}.\textbf{step} (\, x,\, \langle o \rangle\, )\,]))}
+		\; \texttt{(App)} \\[5mm]
+		\frac{ }{(m, j, r, s) \triangleright v = x_1, \ldots, x_n \Rightarrow (m, j, r, (s\, ::\, [\, v = x_1, \ldots, x_n\,]))}\; \texttt{(TupleConstr)} \\[5mm]
+		\frac%
+		{ (m, j, r, s) \triangleright \langle t \rangle = e \Rightarrow (m', j', r', s') }%
+		{ (m,j,r,s) \triangleright v_1\bm{,}\, \ldots\bm{,}\, v_n = e \Rightarrow (m',j',r', (s'\, ::\, [\, v_1\bm{,}\, \ldots\bm{,}\, v_n = \langle t \rangle\, ]))}%
+		\; \texttt{(TupleDestr)}
+		\end{gather*}
+		\]
+	</span>
+</section>
+
+<section>
+	<div class="contr-box">
+		<div class="contr-paper">
+			<div class="contr-title">Dynamic Verification of OCaml Software with Gospel and Ortac/QCheck-STM</div>
+			<div class="contr-authors"><b>Huber N.</b>, Spargo N., Osborne N., Hym S., Midtgaard J.</div>
+		</div>
+		<div class="contr-badges">
+			<img class="contr-badge" src="images/etaps_reusable.svg">
+			<img class="contr-badge" src="images/etaps_available.svg">
+		</div>
+	</div>
+</section>
+
+<section>
+	<p><img width="20%" src="images/colour-logo.png"></p>
+	<ul>
+		<li class="fragment fade-up">Caml (ML dialect) + OO</li>
+		<li class="fragment fade-up">Functional core</li>
+		<li class="fragment fade-up">Many <em>imperative features</em></li>
+		<ul>
+			<li class="fragment fade-up">References</li>
+			<li class="fragment fade-up">Mutable arrays</li>
+			<li class="fragment fade-up">I/O</li>
+			<li class="fragment fade-up">Exceptions</li>
+		</ul>
+	</ul>
+</section>
+
+<section>
+	<img class="fragment fade-up" width="250em" src="images/logo-rocq-orange_blue.png" /><br>
+	<img class="fragment fade-up" width="250em" src="images/frama-c.png" /><br>
+	<div class="fragment fade-up" style="display:flex; flex-direction: row; justify-content: center; align-items: center; gap: 2%">
+		<img width="50em" src="images/logo-2.png" /> 
+		<p>Infer</p>
+	</div>
+	<p class="fragment fade-up">Astrée</p>
+	<h3 class="fragment fade-up">...</h3>
+</section>
+
+<section>
+	<h3>Gospel</h3>
+	<ul>
+		<li class="fragment fade-up">Behavioural specification language</li>
+		<li class="fragment fade-up">Type invariants, function pre/post conditions, mutability, exceptions, ...</li>
+		<li class="fragment fade-up">Tool agnostic</li>
+		<ul>
+			<li class="fragment fade-up">Cameleer</li>
+			<li class="fragment fade-up">Why3gospel</li>
+			<li data-id="ortac" class="fragment fade-up">ORTAC</li>
+			<li class="fragment fade-up">...</li>
+		</ul>
+	</ul>
+</section>
+
+<section>
+	<h3 data-id="ortac">ORTAC</h3>
+	<ul>
+		<li class="fragment fade-up"><strong>(O)</strong>Caml <strong>(R)</strong>un<strong>(T)</strong>ime <strong>(A)</strong>ssertion <strong>(C)</strong>hecker</li>
+		<li class="fragment fade-up">Module I/F + GOSPEL => code for testing</li>
+		<li class="fragment fade-up">Plugins</li>
+		<ul>
+			<li class="fragment fade-up">Wrapper</li>
+			<li class="fragment fade-up">Monolith</li>
+			<li class="fragment fade-up">QCheck-STM</li>
+			<li class="fragment fade-up">...</li>
+		</ul>
+	</ul>
+</section>
+
+<section>
+	<h3>QCheck-STM</h3>
+	<ul>
+		<li class="fragment fade-up">QCheck + state</li>
+		<li class="fragment fade-up">black-box, model-based state-machine testing</li>
+	</ul>
+	<img width="70%" class="fragment fade-up" src="images/pbt.drawio.png" />
+</section>
+
+<section>
+	<img class="r-stretch" width="100%" src="images/ortac_overview.drawio.png" />
+</section>
+
+<section>
+	<h3>Stack (Excerpt)</h3>
+	<pre><code data-trim data-noescape data-line-numbers class="language-ocaml">
+		type 'a t
+		
+		exception Empty
+		
+		val create : unit -> 'a t
+		val push : 'a -> 'a t -> unit
+		val pop : 'a t -> 'a
+		val is_empty : 'a t -> bool
+	</code></pre>
+</section>
+
+<section>
+	<pre class="fragment fade-up"><code data-trim data-noescape data-line-numbers class="language-ocaml">
+		type 'a t
+		(*@ mutable model contents : 'a sequence *)
+	</code></pre>
+
+	<pre class="fragment fade-up"><code data-trim data-noescape data-line-numbers data-ln-start-from="6" class="language-ocaml">
+		val create : unit -> 'a t
+		(*@ t = create ()
+			  ensures t.contents = Sequence.empty *)
+	</code></pre>
+
+	<pre class="fragment fade-up"><code data-trim data-noescape data-line-numbers data-ln-start-from="10" class="language-ocaml">
+		val push : 'a -> 'a t -> unit
+		(*@ push v t
+				modifies t.contents
+				ensures t.contents =
+					Sequence.cons v (old t.contents) *)
+	</code></pre>
+
+	<pre class="fragment fade-up"><code data-trim data-noescape data-line-numbers data-ln-start-from="52" class="language-ocaml">
+		val is_empty : 'a t -> bool
+		(*@ b = is_empty t
+				ensures b = match Sequence.length t.contents with
+				  | 0 -> true
+				  | _ -> false *)
+	</code></pre>
+</section>
+
+<section>
+	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
+		val copy : 'a t -> 'a t
+		(*@ r = copy t
+				ensures r.contents = t.contents *)
+	</code></pre>
+	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
+		val transfer : 'a t -> 'a t -> unit
+		(*@ transfer t1 t2
+				modifies t1.contents
+				modifies t2.contents
+				ensures t1.contents = Sequence.empty
+				ensures t2.contents =
+					(old t1.contents) ++ (old t2.contents) *)
+	</code></pre>
+</section>
+
+<section>
+	<img class="r-stretch" src="images/sut_stack.drawio.png" />
+</section>
+
+<section>
+	<h3>Evaluation - Errors/Bugs found</h3>
+</section>
+
+<section>
+	<h3>Hashtbl</h3>
+	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
+		val create : ?random:bool -> int -> ('a, 'b) t
+		(** [Hashtbl.create n] creates an empty hash table, with
+			initial size [n]. For best results, [n] should be on the
+			order of the expected number of elements that will be in
+			the table.  The table grows as needed, so [n] is just an
+			initial guess. ... *)
+	</code></pre>
+	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
+		type ('a, 'b) t
+		(*@ mutable model contents : ('a * 'b) list *)
+
+		val create : ?random:bool -> int -> ('a, 'b) t
+		(*@ h = create ?random size
+				checks size >= 0
+				ensures h.contents = [] *)
+	</code></pre>
+</section>
+
+<section>
+	<pre><code data-trim data-noescape class="language-text">
+		Gospel specification violation in function create
+
+		File "hashtbl.mli", line 7, characters 11-20:
+			size >= 0
+		when executing the following sequence of operations:
+
+		[@@@ocaml.warning "-8"]
+		open Hashtbl
+		let protect f = try Ok (f ()) with e -> Error e
+		let sut0 = create ~random:false 16
+		let r = protect (fun () -> create ~random:true (-8))
+		assert (match r with
+					| Error (Invalid_argument _) -> true
+					| _ -> false)
+		(* returned Ok (<sut>) *)
+	</code></pre>
+</section>
+
+<section>
+	<h3>Errors found</h3>
+	<ul>
+		<li class="fragment fade-up">Documentation fix</li>
+		<ul>
+			<li class="fragment fade-up"><em>Hashtbl.create</em> (initial size guess can be negative)</li>
+		</ul>
+		<li class="fragment fade-up">2 bugs in <em>Varray</em> library
+		<li class="fragment fade-up">7 bugs in <em>Bitv</em> library</li> 
+		<ul>
+			<li class="fragment fade-up">3 functions with possible integer overflow</li>
+			<li class="fragment fade-up">2 functions with possible division-by-zero</li>
+			<li class="fragment fade-up">2 functions throwing unexpected exceptions</li>
+		</ul>
+		<li class="fragment fade-up">...</li>
+	</ul>
+</section>
+
+<section>
+	<h3>Evaluation - API coverage</h3>
+</section>
+
+<section>
+	<img class="r-stretch" src="images/api_coverage.png" />
 </section>
 
 
-				<section>Slide 2</section>
+<section>
+	<div class="contr-box">
+		<div class="contr-paper">
+			<div class="contr-title">An Encoding of Interaction Nets in OCaml</div>
+			<div class="contr-authors"><b>Huber N.</b>, Yi W.</div>
+		</div>
+	</div>
+</section>
+
+<section data-auto-animate>
+	<h3>Graph rewriting</h3>
+	<img width="50%" src="images/graph_rewriting_rule.png">
+</section>
+
+<section data-auto-animate>
+	<div>
+		<img width="30%" src="images/graph_rewriting_rule.png">
+	</div>
+	<div>
+		<img width="50%" src="images/graph_rewriting_application.png">
+	</div>
+</section>
+
+<section>
+	<h3>Interaction nets</h3>
+	<ul>
+		<li class="fragment fade-up">Specific form of graph rewriting</li>
+		<li class="fragment fade-up">Visual programming language</li>
+		<li class="fragment fade-up">Invented by Yves Lafont [1]</li>
+		<li class="fragment fade-up"></li>
+	</ul>
+</section>
+
+<section>
+	<h3>Example - Arithmetic</h3>
+	<div>
+		<img class="fragment fade-up" width="30%" src="images/inet-arith-agents.png">
+	</div>
+	<div>
+		<img class="fragment fade-up" style="padding-right: 5rem;" width="30%" src="images/inet-arith-add-zero.png">
+		<img class="fragment fade-up" width="40%" src="images/inet-arith-add-one.png">
+	</div>
+</section>
+
+<section>
+	<img width="30%" src="images/inet-arith-ex1.png">
+</section>
+
+<section>
+	<img width="30%" src="images/inet-arith-ex2.png">
+</section>
+
+<section>
+	<!-- <div>
+		<img width="30%" style="opacity: 30%;" src="images/inet-arith-add-one.png">
+	</div> -->
+	<div>
+		<img width="52%" src="images/inet-arith-ex3.png">
+	</div>
+</section>
+
+<section>
+	<img width="30%" src="images/inet-arith-ex4.png">
+</section>
+
+<section>
+	<img width="50%" src="images/inet-arith-ex5.png">
+</section>
+
+<section>
+	<img width="70%" src="images/inet-arith-more-agents.png">
+</section>
+
+<section>
+	<h3>Typing Issues</h3>
+	<img width="30%" src="images/inet-arith-typing-issues.png">
+</section>
+
+<section>
+	<h3>Lafont's Type System</h3>
+	<img width="45%" src="images/inet-arith-more-agents-type.png">
+</section>
+
+
+
+<section>
+	<h3>Motivation</h3>
+	<ul>
+		<li class="fragment fade-up">No previous encoding in OCaml</li>
+		<li class="fragment fade-up">Primary interest: manual encoding</li>
+		<li class="fragment fade-up">Most existing encodings focus on efficiency</li>
+		<li class="fragment fade-up">Original paper presented a type system</li>
+		<li class="fragment fade-up">Can we express this type system in OCaml?</li>
+		<li class="fragment fade-up">Can we make use of OCaml's support for parallelism?</li>
+	</ul>
+</section>
+
+<section>
+	<h3>Agents</h3>
+	<img width="60%" src="images/typed_agent_example.drawio.png" />
+	<p class="fragment">$\alpha, \beta, \gamma \in \Sigma$ &nbsp; (label set)</p>
+	<p class="fragment">value type (int, bool, list, ...)</p>
+	<p class="fragment">polarity ($+$, $-$)</p>
+</section>
+
+<section>
+	<h3>Rules</h3>
+	<img width="90%" src="images/inet_rule.drawio.png" />
+	<p class="fragment">$(\alpha \times \beta \rightarrow N) \in \mathscr{R}$ &nbsp; (rule set)</p>
+</section>
+
 			</div>
 		</div>
 
