@@ -47,4 +47,46 @@
     margin: 0px !important;
 }
 
+.artifact-container {
+  display: inline-flex;
+  align-items: center; /* center alignment */
+  gap: 8px;            /* space between title and badge */
+}
 
+.artifact-title {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.doi-badge {
+  display: inline-flex;
+  font-family: "DejaVu Sans", Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  text-decoration: none;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 0px solid #ccc;
+}
+
+.doi-badge .label {
+  background: #555;
+  color: white;
+  padding: 4px 6px;
+  font-weight: 600;
+}
+
+.doi-badge .value {
+  background: #1f78ff;
+  color: white;
+  padding: 4px 8px;
+  text-decoration: none;
+}
+
+.doi-badge .value:hover {
+  background: #1f78ff;
+}
+
+Copy
+.noBorder {
+    border:none !important;
+}
