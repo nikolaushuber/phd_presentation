@@ -209,8 +209,8 @@
 <section>
 	<h3>Design choices</h3>
 	<ul>
-		<li>Memory operators</li>
-	<li style="list-style-type: none;"><span style="font-size: 1.2rem;">
+		<li class="fragment fade-up">Memory operators</li>
+	<li class="fragment fade-up" style="list-style-type: none;"><span style="font-size: 1.2rem;">
 	\[
 	\begin{array}{c|llll}
 	{} & 1 & 2 & 3 & \cdots \\ 
@@ -224,11 +224,11 @@
 	\]
 	</span></li>
 
-	<li>Selective conditional:
+	<li class="fragment fade-up">Selective evaluation:
 	<ul>
-		<span style="font-size: 1.5rem">$\textbf{if}/\textbf{then}/\textbf{else}$</span> only selectively evaluates subexpressions</li>
+		<span style="font-size: 1.5rem">$\textbf{if}/\textbf{then}/\textbf{else}$</span>, <span style="font-size:1.5rem;">$\textbf{either}/\textbf{or}$</span>, <span style="font-size:1.5rem;">$\textbf{fby}$</span></li>
 	</ul>
-	<li>Expression evaluation might cause side effects</li>
+	<li class="fragment fade-up">Expression evaluation might cause side effects</li>
 
 </section>
 
@@ -295,7 +295,7 @@
 	</span>
 </section>
 
-<section>
+<!-- <section>
 	<span style="font-size: 70%">
 	\[
 	\begin{gather*}
@@ -304,7 +304,7 @@
 	\end{gather*}
 	\]
 	</span>
-</section>
+</section> -->
 
 <section>
 	<span style="font-size: 70%">
@@ -318,7 +318,7 @@
 	</span>
 </section>
 
-<section>
+<!-- <section>
 	<span style="font-size: 50%">
 	\[
 	\begin{gather*}
@@ -327,7 +327,7 @@
 	\end{gather*}
 	\]
 	</span>
-</section>
+</section> -->
 
 <section>
 	<img width="50%" src="images/rewriting_fifo.png" />
@@ -350,6 +350,26 @@
 <section>
 	<h3>Step Compiler overview</h3>
 	<img width="70%" src="images/compiler_overview.jpg">
+</section>
+
+<section>
+	<h3>Future work</h3>
+	<ul>
+		<li class="fragment fade-up">Extension of type system</li>
+		<ul>
+			<li class="fragment fade-up">float, double, strings, ...</li>
+			<li class="fragment fade-up">algebraic data-types</li>
+		</ul>
+		<li class="fragment fade-up">Additional read/write strategies</li>
+		<ul>
+			<li class="fragment fade-up">Registers</li>
+			<li class="fragment fade-up">Upto-k</li>
+		</ul>
+		<li class="fragment fade-up">Effect type system</li>
+	</ul>
+	<pre class="fragment fade-up"><code data-trim data-noescape class="language-text">
+		step print_int (_ : int) -[ IO ]-> ()
+	</code></pre>
 </section>
 
 <section>
@@ -407,6 +427,9 @@
 	<h3>Gospel</h3>
 	<ul>
 		<li class="fragment fade-up">Behavioural specification language</li>
+		<ul>
+			<li class="fragment fade-up">ACSL, JML, ...</li>
+		</ul>
 		<li class="fragment fade-up">Type invariants, function pre/post conditions, mutability, exceptions, ...</li>
 		<li class="fragment fade-up">Tool agnostic</li>
 		<ul>
@@ -422,7 +445,7 @@
 	<h3 data-id="ortac">ORTAC</h3>
 	<ul>
 		<li class="fragment fade-up"><strong>(O)</strong>Caml <strong>(R)</strong>un<strong>(T)</strong>ime <strong>(A)</strong>ssertion <strong>(C)</strong>hecker</li>
-		<li class="fragment fade-up">Module I/F + GOSPEL => code for testing</li>
+		<li class="fragment fade-up">Module I/F + GOSPEL <span class=fragment fade-up">&rArr; code for testing</span></li>
 		<li class="fragment fade-up">Plugins</li>
 		<ul>
 			<li class="fragment fade-up">Wrapper</li>
@@ -579,6 +602,16 @@
 
 <section>
 	<img class="r-stretch" src="images/api_coverage.png" />
+</section>
+
+<section>
+	<h3>Future work</h3>
+	<ul>
+		<li class="fragment fade-up">Aliased SUT arguments</li>
+		<li class="fragment fade-up">Higher-order functions (<span style="font-style: italic;">map, fold, iter</span>)</li>
+		<li class="fragment fade-up">Utilise <span style="font-style: italic;">requires</span> clause for command generation</li>
+		<li class="fragment fade-up">Parallel testing</li>
+	</ul>
 </section>
 
 
@@ -781,6 +814,19 @@
 <section>
 	<h3>Evaluation - Fibonacci</h3>
 	<img width="70%" src="images/inet-fib-ex.png">
+</section>
+
+<section>
+	<h3>Future work</h3>
+	<ul>
+		<li class="fragment fade-up">Investigate performance</li>
+		<li class="fragment fade-up">Try different parallel runtime libraries</li>
+		<li class="fragment fade-up">Compilation to interaction nets</li>
+		<ul>
+			<li class="fragment fade-up">OCaml <span style="font-style: italic;">extension nodes</span>?</li>
+			<li class="fragment fade-up">Compiling Mimosa to interaction nets?</li>
+		</ul>
+	</ul>
 </section>
 
 <section>

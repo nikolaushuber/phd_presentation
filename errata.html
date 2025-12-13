@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Types and Time</title>
+
+		<link rel="stylesheet" href="revealjs/dist/reset.css">
+		<link rel="stylesheet" href="revealjs/dist/reveal.css">
+		<link rel="stylesheet" href="revealjs/dist/theme/white.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="revealjs/plugin/highlight/stackoverflow-light.css">
+
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+                <section>
+                    <h3>Errata</h3>
+                    <ul>
+                        <li>Summary of contributions:</li>
+                        <ul style="font-size: 2rem;">
+                            <li style="list-style-type: none;">In Paper III, my contribution to the ORTAC tool specifically related to the multi-SUT extension, and smaller parts like allowing to test functions without SUT-arguments</li>
+                        </ul>
+                        <li>Section 2.2 - The Synchronous Approach:</li>
+                        <ul style="font-size: 2rem;">
+                            <li style="list-style-type: none;">The presentation mainly focusses on the original Lustre language, however, many aspects (e.g., type-based initialisation analysis) are based on a more modern version of the language</li>
+                        </ul>
+                        <li>Paper I - Appendix A:</li>
+                        <ul style="font-size: 2rem;">
+                            <li style="list-style-type: none;">The expression <span style="font-size: 1.5rem;">$0 \bm{\rightarrow} 0 \bm{\rightarrow} \textbf{pre}\, \textbf{pre}\, x$</span> is also invalid in Lustre</li>
+                        </ul>
+                    </ul>
+                </section>
+			</div>
+		</div>
+
+		<script src="revealjs/dist/reveal.js"></script>
+		<script src="revealjs/plugin/notes/notes.js"></script>
+		<script src="revealjs/plugin/markdown/markdown.js"></script>
+		<script src="revealjs/plugin/highlight/highlight.js"></script>
+		<script src="revealjs/plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+				slideNumber: "c",
+				transition: "fade",
+				controls: false,
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
+			});
+		</script>
+	</body>
+</html>
