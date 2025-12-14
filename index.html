@@ -65,9 +65,9 @@
 	</div>
 </section>
 
-<section>
+<!-- <section>
 	<img width="80%" src="images/v_diagram_papers.jpg">
-</section>
+</section> -->
 
 <section>
 	<div class="contr-box">
@@ -97,7 +97,7 @@
 	</div>
 </section>
 
-<section>
+<!-- <section>
 	<img width="80%" src="images/mimos_gps_example-page_1.png">
 </section>
 
@@ -119,7 +119,7 @@
 
 <section>
 	<img width="80%" src="images/mimos_gps_example-page_6.png">
-</section>
+</section> -->
 
 <section>
 	<h3>Motivation</h3>
@@ -149,7 +149,7 @@
 </section>
 
 <section>
-	<h3>Our contribution</h3>
+	<h3>Contribution</h3>
 
 	<ul>
 		<li class="fragment fade-up">MIMOS Application language (Mimosa)</li>
@@ -183,6 +183,38 @@
 </section>
 
 <section>
+	<h3>Design choices</h3>
+	<ul>
+		<li class="fragment fade-up">Syntax close to Lustre</li>
+		<ul>
+			<li class="fragment fade-up">Equations</li>
+			<li class="fragment fade-up">Sequence operators (pre, &rarr;, fby)</li>
+		</ul>
+		<li class="fragment fade-up">Expression evaluation might cause side effects</li>
+		<!-- <li class="fragment fade-up">Memory operators</li>
+	<li class="fragment fade-up" style="list-style-type: none;"><span style="font-size: 1.2rem;">
+	\[
+	\begin{array}{c|llll}
+	{} & 1 & 2 & 3 & \cdots \\ 
+	\hline
+	x & x_1 & x_2 & x_3 & \cdots \\
+	y & y_1 & y_2 & y_3 & \cdots \\
+	\textbf{pre}\; x & \bot & x_1 & x_2 & \cdots \\
+	x\, \bm{\rightarrow}\, y & x_1 & y_2 & y_3 & \cdots \\
+	x\; \textbf{fby}\; y & x_1 & y_1 & y_2 & \cdots
+	\end{array}
+	\]
+	</span></li> -->
+		<li class="fragment fade-up">Selective evaluation instead of pointwise
+		<ul>
+			<li class="fragment fade-up">Lustre: <span style="font-size: 1.5rem;">$(\textbf{if}\, x\, \textbf{then}\, a \bm{\rightarrow} b\, \textbf{else}\, a \bm{\rightarrow} c) \equiv (a \bm{\rightarrow} (\textbf{if}\, x\, \textbf{then}\, b\, \textbf{else}\, c))$</span></li>
+			<li class="fragment fade-up">Selectively evaluated in Mimosa <span class="fragment fade-up">&rArr; no need for multi-clocks</span></li>
+			<!-- <span style="font-size: 1.5rem">$\textbf{if}/\textbf{then}/\textbf{else}$</span>, <span style="font-size:1.5rem;">$\textbf{either}/\textbf{or}$</span>, <span style="font-size:1.5rem;">$\textbf{fby}$</span></li> -->
+		</ul>
+	
+</section>
+
+<!-- <section>
 	<span style="font-size: 60%">
 	$$\small
 	\begin{align*}
@@ -204,33 +236,7 @@
 	\end{array}
 	\end{align*}$$
 	</span>
-</section>
-
-<section>
-	<h3>Design choices</h3>
-	<ul>
-		<li class="fragment fade-up">Memory operators</li>
-	<li class="fragment fade-up" style="list-style-type: none;"><span style="font-size: 1.2rem;">
-	\[
-	\begin{array}{c|llll}
-	{} & 1 & 2 & 3 & \cdots \\ 
-	\hline
-	x & x_1 & x_2 & x_3 & \cdots \\
-	y & y_1 & y_2 & y_3 & \cdots \\
-	\textbf{pre}\; x & \bot & x_1 & x_2 & \cdots \\
-	x\, \bm{\rightarrow}\, y & x_1 & y_2 & y_3 & \cdots \\
-	x\; \textbf{fby}\; y & x_1 & y_1 & y_2 & \cdots
-	\end{array}
-	\]
-	</span></li>
-
-	<li class="fragment fade-up">Selective evaluation:
-	<ul>
-		<span style="font-size: 1.5rem">$\textbf{if}/\textbf{then}/\textbf{else}$</span>, <span style="font-size:1.5rem;">$\textbf{either}/\textbf{or}$</span>, <span style="font-size:1.5rem;">$\textbf{fby}$</span></li>
-	</ul>
-	<li class="fragment fade-up">Expression evaluation might cause side effects</li>
-
-</section>
+</section> -->
 
 <!-- <section>
 	<h3>Environments</h3>
@@ -348,8 +354,23 @@
 </section>
 
 <section>
+	<h3>Compilation</h3>
+	<ul>
+		<li class="fragment fade-up">Channels <span class="fragment fade-up">&rArr; queues</span></li>
+		<li class="fragment fade-up">Nodes <span class="fragment fade-up">&rArr; tasks</span></li>
+		<li class="fragment fade-up">Steps <span class="fragment fade-up">&rArr; functions + state</span></li>
+		<li class="fragment fade-up">Parameters via model-file</li>
+		<ul>
+			<li class="fragment fade-up">Task priorities</li>
+			<li class="fragment fade-up">CPU masks</li>
+			<li class="fragment fade-up">Queue sizes</li>
+		</ul>
+	</ul>
+</section>
+
+<section>
 	<h3>Step Compiler overview</h3>
-	<img width="70%" src="images/compiler_overview.jpg">
+	<img width="80%" src="images/compiler_overview.png">
 </section>
 
 <section>
@@ -432,12 +453,6 @@
 		</ul>
 		<li class="fragment fade-up">Type invariants, function pre/post conditions, mutability, exceptions, ...</li>
 		<li class="fragment fade-up">Tool agnostic</li>
-		<ul>
-			<li class="fragment fade-up">Cameleer</li>
-			<li class="fragment fade-up">Why3gospel</li>
-			<li data-id="ortac" class="fragment fade-up">ORTAC</li>
-			<li class="fragment fade-up">...</li>
-		</ul>
 	</ul>
 </section>
 
@@ -465,26 +480,23 @@
 	<img width="70%" class="fragment fade-up" src="images/pbt.drawio.png" />
 </section>
 
-<section>
+<!-- <section>
 	<img width="70%" src="images/ortac_overview.drawio.png" />
-</section>
+</section> -->
 
 <section>
 	<h3>Stack (Excerpt)</h3>
 	<pre><code data-trim data-noescape data-line-numbers class="language-ocaml">
 		type 'a t
 		
-		exception Empty
-		
 		val create : unit -> 'a t
 		val push : 'a -> 'a t -> unit
-		val pop : 'a t -> 'a
 		val is_empty : 'a t -> bool
 	</code></pre>
 </section>
 
 <section>
-	<pre class="fragment fade-up"><code data-trim data-noescape data-line-numbers class="language-ocaml">
+	<pre class=""><code data-trim data-noescape data-line-numbers class="language-ocaml">
 		type 'a t
 		(*@ mutable model contents : 'a sequence *)
 	</code></pre>
@@ -513,7 +525,7 @@
 </section>
 
 <section>
-	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
+	<pre class="OCaml"><code data-trim data-noescape data-line-numbers>
 		val copy : 'a t -> 'a t
 		(*@ r = copy t
 				ensures r.contents = t.contents *)
@@ -533,11 +545,7 @@
 	<img class="r-stretch" src="images/sut_stack.drawio.png" />
 </section>
 
-<section>
-	<h3>Evaluation - Errors/Bugs found</h3>
-</section>
-
-<section>
+<!-- <section>
 	<h3>Hashtbl</h3>
 	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
 		val create : ?random:bool -> int -> ('a, 'b) t
@@ -576,10 +584,10 @@
 					| _ -> false)
 		(* returned Ok (<sut>) *)
 	</code></pre>
-</section>
+</section> -->
 
 <section>
-	<h3>Errors found</h3>
+	<h3>Evaluations - Errors found</h3>
 	<ul>
 		<li class="fragment fade-up">Documentation fix</li>
 		<ul>
@@ -587,21 +595,18 @@
 		</ul>
 		<li class="fragment fade-up">2 bugs in <em>Varray</em> library
 		<li class="fragment fade-up">7 bugs in <em>Bitv</em> library</li> 
-		<ul>
+		<!-- <ul>
 			<li class="fragment fade-up">3 functions with possible integer overflow</li>
 			<li class="fragment fade-up">2 functions with possible division-by-zero</li>
 			<li class="fragment fade-up">2 functions throwing unexpected exceptions</li>
-		</ul>
+		</ul> -->
 		<li class="fragment fade-up">...</li>
 	</ul>
 </section>
 
 <section>
-	<h3>Evaluation - API coverage</h3>
-</section>
-
-<section>
-	<img class="r-stretch" src="images/api_coverage.png" />
+	<h3 style="margin-bottom: 0;">Evaluation - API coverage</h3>
+	<img width="70%" style="margin-top: 0;" src="images/api_coverage.png" />
 </section>
 
 <section>
@@ -631,7 +636,7 @@
 	</div>
 </section>
 
-<section>
+<!-- <section>
 	<h3>Generalised Algebraic Data Types</h3>
 	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
 		type expr =
@@ -658,8 +663,7 @@
 			| If (e1, e2, e3) -> 
 					if (eval e1) then (eval e2) else (eval e3)
 	</code></pre>
-	
-</section>
+</section> -->
 
 <section data-auto-animate>
 	<h3>Graph rewriting</h3>
@@ -692,7 +696,6 @@
 	<ul>
 		<li class="fragment fade-up">Specific form of graph rewriting</li>
 		<li class="fragment fade-up">Visual programming language</li>
-		<li class="fragment fade-up">Invented by Yves Lafont</li>
 		<li class="fragment fade-up">Many interesting properties</li>
 	</ul>
 </section>
@@ -728,7 +731,7 @@
 	</div>
 </section>
 
-<section>
+<!-- <section>
 	<img width="30%" src="images/inet-arith-ex1.png">
 </section>
 
@@ -737,9 +740,6 @@
 </section>
 
 <section>
-	<!-- <div>
-		<img width="30%" style="opacity: 30%;" src="images/inet-arith-add-one.png">
-	</div> -->
 	<div>
 		<img width="52%" src="images/inet-arith-ex3.png">
 	</div>
@@ -751,7 +751,7 @@
 
 <section>
 	<img width="50%" src="images/inet-arith-ex5.png">
-</section>
+</section> -->
 
 <section>
 	<img width="70%" src="images/inet-arith-more-agents.png">
@@ -772,7 +772,7 @@
 	<ul>
 		<li class="fragment fade-up">Locality<span class="fragment fade-up"> &rArr; parallel evaluation</span></li>
 		<li class="fragment fade-up">Easy to indentify pattern graphs</li>
-		<li class="fragment fade-up">No overlapping rules<span class="fragment fade-up"> &rArr; strong confluence</span></li>
+		<li class="fragment fade-up">Strong confluence</span></li>
 	</ul>
 </section>
 
@@ -783,7 +783,7 @@
 		<li class="fragment fade-up">Most existing encodings focus on efficiency</li>
 		<li class="fragment fade-up">Focus on type system</li>
 		<li class="fragment fade-up">Can we express this type system in OCaml?</li>
-		<li class="fragment fade-up">Can we make use of OCaml's support for parallelism?</li>
+		<li class="fragment fade-up">Can we use OCaml's support for parallelism?</li>
 	</ul>
 </section>
 
