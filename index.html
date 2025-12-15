@@ -65,10 +65,6 @@
 	</div>
 </section>
 
-<!-- <section>
-	<img width="80%" src="images/v_diagram_papers.jpg">
-</section> -->
-
 <section>
 	<div class="contr-box">
 		<div class="contr-paper">
@@ -97,50 +93,13 @@
 	</div>
 </section>
 
-<!-- <section>
-	<img width="80%" src="images/mimos_gps_example-page_1.png">
-</section>
-
-<section>
-	<img width="80%" src="images/mimos_gps_example-page_2.png">
-</section>
-
-<section>
-	<img width="80%" src="images/mimos_gps_example-page_3.png">
-</section>
-
-<section>
-	<img width="80%" src="images/mimos_gps_example-page_4.png">
-</section>
-
-<section>
-	<img width="80%" src="images/mimos_gps_example-page_5.png">
-</section>
-
-<section>
-	<img width="80%" src="images/mimos_gps_example-page_6.png">
-</section> -->
-
-<section>
-	<h3>Motivation</h3>
-	<ul>
-		<li class="fragment fade-up">Synchronous paradigm</li>
-		<ul>
-			<li class="fragment fade-up">Lustre/SCADE, Esterel, Signal, ...</li>
-			<li class="fragment fade-up">safety-critical embedded control</li>
-		</ul>
-		<li class="fragment fade-up">Modern execution platforms</li>
-		<ul>
-			<li class="fragment fade-up">Multi- & many-core processors</li>
-			<li class="fragment fade-up">distributed systems</li>
-		</ul>
-		<li class="fragment fade-up">(Safe) updates?</li>
-	</ul>
-</section>
-
 <section>
 	<h3>Mimos</h3>
 	<img class="r-stretch" src="images/mimos_model.jpg">
+	<ul>
+		<li>Timed Kahn Process Network</li>
+		<li>Timed read/write policies</li>
+	</ul>
 	<div style="margin-top: 1rem;" class="citation">
 		<div class="cite">Mimos: A Deterministic Model for the Design and Update of Real-Time Systems</div>
 		<div class="source">Wang Yi, Morteza Mohaqeqi, Susanne Graf<br>
@@ -165,20 +124,20 @@
 </section>
 
 <section data-auto-animate>
-	<img width="80%" src="images/fib_example.png" />
-	<pre class="text"><code data-trim data-noescape data-line-numbers="|1|2,3|5-8|10-12|">
-		step print_int (_ : int) --> ()
-		step add (x, y) --> z { z = x + y }
-		step split x --> (o1, o2, o3) { o1, o2, o3 = x, x, x }
+	<img width="70%" src="images/button_example.png" />
+	<pre class="text"><code data-trim data-noescape data-line-numbers="|1|3|4,5,6|9,10|12">
+		step edge (in : bool) --> (out : bool?)
+		{
+			pre_in = in -> pre in;
+			out = if !pre_in && in then Some true
+				else if pre_in && !in then Some false
+				else None;
+		}
 
-		channel a : int = { 1 }
-		channel b : int = { 0 }
-		channel c : int
-		channel d : int
+		channel a : bool
+		channel b : bool
 
-		node add implements add (a, c) --> (b) every 10ms
-		node split implements split (b) --> (a, d, c) every 10ms
-		node print implements print_int (d) --> () every 10ms
+		node edge implements edge (a) --> (b?) every 50ms
 	</code></pre>
 </section>
 
@@ -191,70 +150,12 @@
 			<li class="fragment fade-up">Sequence operators (pre, &rarr;, fby)</li>
 		</ul>
 		<li class="fragment fade-up">Expression evaluation might cause side effects</li>
-		<!-- <li class="fragment fade-up">Memory operators</li>
-	<li class="fragment fade-up" style="list-style-type: none;"><span style="font-size: 1.2rem;">
-	\[
-	\begin{array}{c|llll}
-	{} & 1 & 2 & 3 & \cdots \\ 
-	\hline
-	x & x_1 & x_2 & x_3 & \cdots \\
-	y & y_1 & y_2 & y_3 & \cdots \\
-	\textbf{pre}\; x & \bot & x_1 & x_2 & \cdots \\
-	x\, \bm{\rightarrow}\, y & x_1 & y_2 & y_3 & \cdots \\
-	x\; \textbf{fby}\; y & x_1 & y_1 & y_2 & \cdots
-	\end{array}
-	\]
-	</span></li> -->
-		<li class="fragment fade-up">Selective evaluation instead of pointwise
+		<li class="fragment fade-up">Shift in perspective
 		<ul>
-			<li class="fragment fade-up">Lustre: <span style="font-size: 1.5rem;">$(\textbf{if}\, x\, \textbf{then}\, a \bm{\rightarrow} b\, \textbf{else}\, a \bm{\rightarrow} c) \equiv (a \bm{\rightarrow} (\textbf{if}\, x\, \textbf{then}\, b\, \textbf{else}\, c))$</span></li>
-			<li class="fragment fade-up">Selectively evaluated in Mimosa <span class="fragment fade-up">&rArr; no need for multi-clocks</span></li>
-			<!-- <span style="font-size: 1.5rem">$\textbf{if}/\textbf{then}/\textbf{else}$</span>, <span style="font-size:1.5rem;">$\textbf{either}/\textbf{or}$</span>, <span style="font-size:1.5rem;">$\textbf{fby}$</span></li> -->
+			<li class="fragment fade-up">Lustre: infinite flows/streams</li>
+			<li class="fragment fade-up">Mimosa: (potentially finite) sequences</li>
 		</ul>
-	
 </section>
-
-<!-- <section>
-	<span style="font-size: 60%">
-	$$\small
-	\begin{align*}
-	\begin{array}{rcll}
-	e : \text{Expression} & ::= & x & \text{Variable} \\
-	{} & | & c & \text{Constant} \\
-	{} & | & e\bm{,}\, \ldots\bm{,}\, e & \text{Tuple} \\
-	{} & | & \textbf{pre}\, e & \text{Pre} \\
-	{} & | & e\, \bm{\rightarrow}\, e & \text{Initialized-by} \\
-	{} & | & e\, \textbf{fby}\, e & \text{Followed-by} \\
-	{} & | & e\, e & \text{Application} \\
-	{} & | & \textbf{if}\, e\, \textbf{then}\, e\, \textbf{else}\, e & \text{Conditional} \\
-	{} & | & \textbf{None} & \text{None} \\
-	{} & | & \textbf{Some}\, e & \text{Some} \\
-	{} & | & \textbf{either}\, e\, \textbf{or}\, e & \text{Option match} \\
-	{} & | & \bm{\lambda}_{p_{in}}^{p_{out}} \bm{.} [p_i = e_i]^n & \text{Abstraction} \\
-	p : \text{Pattern} & ::= & x & \text{Variable pattern} \\
-	{} & | & p\bm{,}\, \ldots\bm{,}\, p & \text{Tuple pattern}
-	\end{array}
-	\end{align*}$$
-	</span>
-</section> -->
-
-<!-- <section>
-	<h3>Environments</h3>
-	<span style="font-size: 80%">
-	$$\Gamma \quad \subseteq \quad \textbf{Names} \times \textbf{Values}$$
-	</span>
-
-	<h5 class="fragment fade-up" style="text-align: left;">Projection</h5>
-	<span class="fragment fade-up" style="font-size: 70%">
-	\[\begin{align*}(x \mapsto 1, y \mapsto 2) \Downarrow_x\; &=\; 1 \\
-	(x \mapsto 1, y \mapsto 2) \Downarrow_{(x, y)}\; &=\; (1, 2)\end{align*}\]
-	</span>
-	<h5 class="fragment fade-up" style="text-align: left;">Update</h5>
-	<span class="fragment fade-up" style="font-size: 70%">
-	\[\begin{align*}(x \mapsto 1, y \mapsto 2) \Uparrow_z^3\; &=\; (x \mapsto 1, y \mapsto 2, z \mapsto 3) \\
-	(x \mapsto 1, y \mapsto 2) \Uparrow_{(x, y)}^{(3, 4)}\; &=\; (x \mapsto 3, y \mapsto 4)\end{align*}\]
-	</span>
-</section> -->
 
 <section>
 	<h3>Step semantics</h3>
@@ -301,17 +202,6 @@
 	</span>
 </section>
 
-<!-- <section>
-	<span style="font-size: 70%">
-	\[
-	\begin{gather*}
-	\frac{}{\Gamma \vdash x \Rightarrow \Gamma \Downarrow_x, x}\; \texttt{\small (Var)} \\[0.6cm]
-	\frac{}{\Gamma \vdash c \Rightarrow c, c}\; \texttt{\small (Const)}
-	\end{gather*}
-	\]
-	</span>
-</section> -->
-
 <section>
 	<span style="font-size: 70%">
 	\[
@@ -324,17 +214,6 @@
 	</span>
 </section>
 
-<!-- <section>
-	<span style="font-size: 50%">
-	\[
-	\begin{gather*}
-	\frac{\Gamma \vdash e_1 \Rightarrow \bm{\lambda}_{p_{in}}^{p_{out}} \bm{.} [p_i = e_i]^n, \text{\textunderscore} \qquad \Gamma \vdash e_2 \Rightarrow v_2, e_2' \qquad \Gamma \Uparrow_{p_{in}}^{v_2} \vdash [p_i = e_i]^n \hookrightarrow [p_i = e_i']^n, \Gamma'}{\Gamma \vdash e_1\; e_2 \Rightarrow \Gamma' \Downarrow_{p_{out}}, (\bm{\lambda}_{p_{in}}^{p_{out}} \bm{.} [p_i = e_i']^n)\; e_2'}\; \texttt{\small (App)} \\[0.8cm]
-	\frac{\Gamma' \vdash e_1 \Rightarrow v_1, e_1' \qquad \ldots \qquad \Gamma' \vdash e_n \Rightarrow v_n, e_n'}{\Gamma \vdash [p_i = e_i]^n \hookrightarrow [p_i = e_i']^n, \Gamma' = \Gamma \Uparrow_{p_1}^{v_1} \cdots \Uparrow_{p_n}^{v_n}}\; \texttt{\small (Eqs)}
-	\end{gather*}
-	\]
-	</span>
-</section> -->
-
 <section>
 	<img width="50%" src="images/rewriting_fifo.png" />
 </section>
@@ -345,46 +224,40 @@
 		<li class="fragment fade-up">Deep embedding into OCaml</li>
 		<li class="fragment fade-up">Step evaluation &rarr; direct translation</li>
 		<li class="fragment fade-up">Node execution &rarr; discrete-event simulation</li>
-		<li class="fragment fade-up">Step prototypes &rarr; OCaml functor</li>
 	</ul>
-</section>
-
-<section>
-	<img width="70%" src="images/mimos_layers.jpg">
 </section>
 
 <section>
 	<h3>Compilation</h3>
 	<ul>
+		<li class="fragment fade-up">To RTOS primitives</li>
 		<li class="fragment fade-up">Channels <span class="fragment fade-up">&rArr; queues</span></li>
-		<li class="fragment fade-up">Nodes <span class="fragment fade-up">&rArr; tasks</span></li>
-		<li class="fragment fade-up">Steps <span class="fragment fade-up">&rArr; functions + state</span></li>
+		<li class="fragment fade-up">Nodes <span class="fragment fade-up">&rArr; periodic tasks</span></li>
+		<li class="fragment fade-up">Steps <span class="fragment fade-up">&rArr; functions + state vector</span></li>
 		<li class="fragment fade-up">Parameters via model-file</li>
 		<ul>
 			<li class="fragment fade-up">Task priorities</li>
 			<li class="fragment fade-up">CPU masks</li>
 			<li class="fragment fade-up">Queue sizes</li>
 		</ul>
+		<li class="fragment fade-up">Formally defined step-translation</li>
 	</ul>
 </section>
 
-<section>
+<!-- <section>
 	<h3>Step Compiler overview</h3>
 	<img width="80%" src="images/compiler_overview.png">
-</section>
+</section> -->
 
 <section>
 	<h3>Future work</h3>
 	<ul>
-		<li class="fragment fade-up">Extension of type system</li>
-		<ul>
-			<li class="fragment fade-up">float, double, strings, ...</li>
-			<li class="fragment fade-up">algebraic data-types</li>
-		</ul>
+		<li class="fragment fade-up">Type system extensions</li>
+		<li class="fragment fade-up">Automated task mapping + schedulability analysis</li>
 		<li class="fragment fade-up">Additional read/write strategies</li>
 		<ul>
 			<li class="fragment fade-up">Registers</li>
-			<li class="fragment fade-up">Upto-k</li>
+			<li class="fragment fade-up">Upto-k (already implemented upto-1)</li>
 		</ul>
 		<li class="fragment fade-up">Effect type system</li>
 	</ul>
@@ -416,21 +289,6 @@
 	<div style="margin-top: 2rem;">
 		<img width="30%" src="images/tarides-logo.svg">
 	</div>
-</section>
-
-<section>
-	<p><img width="20%" src="images/colour-logo.png"></p>
-	<ul>
-		<li class="fragment fade-up">Caml (ML dialect) + OO</li>
-		<li class="fragment fade-up">Functional core</li>
-		<li class="fragment fade-up">Many <em>imperative features</em></li>
-		<ul>
-			<li class="fragment fade-up">References</li>
-			<li class="fragment fade-up">Mutable arrays</li>
-			<li class="fragment fade-up">I/O</li>
-			<li class="fragment fade-up">Exceptions</li>
-		</ul>
-	</ul>
 </section>
 
 <section>
@@ -480,132 +338,12 @@
 	<img width="70%" class="fragment fade-up" src="images/pbt.drawio.png" />
 </section>
 
-<!-- <section>
-	<img width="70%" src="images/ortac_overview.drawio.png" />
-</section> -->
-
-<section>
-	<h3>Stack (Excerpt)</h3>
-	<pre><code data-trim data-noescape data-line-numbers class="language-ocaml">
-		type 'a t
-		
-		val create : unit -> 'a t
-		val push : 'a -> 'a t -> unit
-		val is_empty : 'a t -> bool
-	</code></pre>
-</section>
-
-<section>
-	<pre class=""><code data-trim data-noescape data-line-numbers class="language-ocaml">
-		type 'a t
-		(*@ mutable model contents : 'a sequence *)
-	</code></pre>
-
-	<pre class="fragment fade-up"><code data-trim data-noescape data-line-numbers data-ln-start-from="6" class="language-ocaml">
-		val create : unit -> 'a t
-		(*@ t = create ()
-			  ensures t.contents = Sequence.empty *)
-	</code></pre>
-
-	<pre class="fragment fade-up"><code data-trim data-noescape data-line-numbers data-ln-start-from="10" class="language-ocaml">
-		val push : 'a -> 'a t -> unit
-		(*@ push v t
-				modifies t.contents
-				ensures t.contents =
-					Sequence.cons v (old t.contents) *)
-	</code></pre>
-
-	<pre class="fragment fade-up"><code data-trim data-noescape data-line-numbers data-ln-start-from="52" class="language-ocaml">
-		val is_empty : 'a t -> bool
-		(*@ b = is_empty t
-				ensures b = match Sequence.length t.contents with
-				  | 0 -> true
-				  | _ -> false *)
-	</code></pre>
-</section>
-
-<section>
-	<pre class="OCaml"><code data-trim data-noescape data-line-numbers>
-		val copy : 'a t -> 'a t
-		(*@ r = copy t
-				ensures r.contents = t.contents *)
-	</code></pre>
-	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
-		val transfer : 'a t -> 'a t -> unit
-		(*@ transfer t1 t2
-				modifies t1.contents
-				modifies t2.contents
-				ensures t1.contents = Sequence.empty
-				ensures t2.contents =
-					(old t1.contents) ++ (old t2.contents) *)
-	</code></pre>
-</section>
-
 <section>
 	<img class="r-stretch" src="images/sut_stack.drawio.png" />
 </section>
 
-<!-- <section>
-	<h3>Hashtbl</h3>
-	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
-		val create : ?random:bool -> int -> ('a, 'b) t
-		(** [Hashtbl.create n] creates an empty hash table, with
-			initial size [n]. For best results, [n] should be on the
-			order of the expected number of elements that will be in
-			the table.  The table grows as needed, so [n] is just an
-			initial guess. ... *)
-	</code></pre>
-	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
-		type ('a, 'b) t
-		(*@ mutable model contents : ('a * 'b) list *)
-
-		val create : ?random:bool -> int -> ('a, 'b) t
-		(*@ h = create ?random size
-				checks size >= 0
-				ensures h.contents = [] *)
-	</code></pre>
-</section>
-
 <section>
-	<pre><code data-trim data-noescape class="language-text">
-		Gospel specification violation in function create
-
-		File "hashtbl.mli", line 7, characters 11-20:
-			size >= 0
-		when executing the following sequence of operations:
-
-		[@@@ocaml.warning "-8"]
-		open Hashtbl
-		let protect f = try Ok (f ()) with e -> Error e
-		let sut0 = create ~random:false 16
-		let r = protect (fun () -> create ~random:true (-8))
-		assert (match r with
-					| Error (Invalid_argument _) -> true
-					| _ -> false)
-		(* returned Ok (<sut>) *)
-	</code></pre>
-</section> -->
-
-<section>
-	<h3>Evaluations - Errors found</h3>
-	<ul>
-		<li class="fragment fade-up">Documentation fix</li>
-		<ul>
-			<li class="fragment fade-up"><em>Hashtbl.create</em> (initial size guess can be negative)</li>
-		</ul>
-		<li class="fragment fade-up">2 bugs in <em>Varray</em> library
-		<li class="fragment fade-up">7 bugs in <em>Bitv</em> library</li> 
-		<!-- <ul>
-			<li class="fragment fade-up">3 functions with possible integer overflow</li>
-			<li class="fragment fade-up">2 functions with possible division-by-zero</li>
-			<li class="fragment fade-up">2 functions throwing unexpected exceptions</li>
-		</ul> -->
-		<li class="fragment fade-up">...</li>
-	</ul>
-</section>
-
-<section>
-	<h3 style="margin-bottom: 0;">Evaluation - API coverage</h3>
+	<h3 style="margin-bottom: 0;">API coverage</h3>
 	<img width="70%" style="margin-top: 0;" src="images/api_coverage.png" />
 </section>
 
@@ -635,35 +373,6 @@
 		</div>
 	</div>
 </section>
-
-<!-- <section>
-	<h3>Generalised Algebraic Data Types</h3>
-	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
-		type expr =
-			| Lit of int
-			| Eq of expr * expr
-			| If of expr * expr * expr
-	</code></pre>
-	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers data-ln-start-from="5">
-		let rec eval (e : expr) : ??? = ...
-	</code></pre>
-</section>
-
-<section>
-	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers>
-		type _ expr =
-			| Lit : int -> int expr
-			| Eq : int expr * int expr -> bool expr
-			| If : bool expr * 'a expr * 'a expr -> 'a expr
-	</code></pre>
-	<pre class="fragment fade-up OCaml"><code data-trim data-noescape data-line-numbers data-ln-start-from="5">
-		let rec eval : type a. a expr -> a = function
-			| Lit n -> n
-			| Eq (e1, e2) -> (eval e1) = (eval e2)
-			| If (e1, e2, e3) -> 
-					if (eval e1) then (eval e2) else (eval e3)
-	</code></pre>
-</section> -->
 
 <section data-auto-animate>
 	<h3>Graph rewriting</h3>
@@ -719,39 +428,6 @@
 		<li style="list-style-type: none;"><img class="fragment fade-up" style="margin-left: 5rem;" width="60%" src="images/inet-rule.png"></li>
 	</ul>
 </section>
-
-<section>
-	<h3>Example - Arithmetic</h3>
-	<div>
-		<img class="fragment fade-up" width="30%" src="images/inet-arith-agents.png">
-	</div>
-	<div>
-		<img class="fragment fade-up" style="padding-right: 5rem;" width="30%" src="images/inet-arith-add-zero.png">
-		<img class="fragment fade-up" width="40%" src="images/inet-arith-add-one.png">
-	</div>
-</section>
-
-<!-- <section>
-	<img width="30%" src="images/inet-arith-ex1.png">
-</section>
-
-<section>
-	<img width="30%" src="images/inet-arith-ex2.png">
-</section>
-
-<section>
-	<div>
-		<img width="52%" src="images/inet-arith-ex3.png">
-	</div>
-</section>
-
-<section>
-	<img width="30%" src="images/inet-arith-ex4.png">
-</section>
-
-<section>
-	<img width="50%" src="images/inet-arith-ex5.png">
-</section> -->
 
 <section>
 	<img width="70%" src="images/inet-arith-more-agents.png">
@@ -811,10 +487,10 @@
 	<img width="70%" src="images/speedup-perf.png">
 </section>
 
-<section>
+<!-- <section>
 	<h3>Evaluation - Fibonacci</h3>
 	<img width="70%" src="images/inet-fib-ex.png">
-</section>
+</section> -->
 
 <section>
 	<h3>Future work</h3>
@@ -822,10 +498,6 @@
 		<li class="fragment fade-up">Investigate performance</li>
 		<li class="fragment fade-up">Try different parallel runtime libraries</li>
 		<li class="fragment fade-up">Compilation to interaction nets</li>
-		<ul>
-			<li class="fragment fade-up">OCaml <span style="font-style: italic;">extension nodes</span>?</li>
-			<li class="fragment fade-up">Compiling Mimosa to interaction nets?</li>
-		</ul>
 	</ul>
 </section>
 
